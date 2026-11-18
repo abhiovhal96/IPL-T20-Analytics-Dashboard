@@ -1,95 +1,421 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IPL T20 Analytics Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 
 <style>
+*{box-sizing:border-box}
 body{
-    margin:0;
-    background:#0b1f5b;
-    font-family:Arial,sans-serif;
-    color:white;
+ margin:0;padding:15px;
+ background:#040d27;color:white;
+ font-family:Arial,sans-serif;
 }
-
-.header{
-    text-align:center;
-    padding:20px;
-    background:#102a72;
-    font-size:32px;
-    font-weight:bold;
+.dashboard{
+ max-width:1500px;margin:auto;padding:15px;
+ background:#071b45;
+ border:4px solid #8315bd;
+ border-radius:10px;
+ box-shadow:0 0 20px #9b20df;
 }
-
+header{
+ text-align:center;padding:15px;
+ background:#092e68;
+ border:1px solid #00baff;
+ border-radius:7px;
+ margin-bottom:15px;
+}
+header h1{margin:0;font-size:23px}
+.top{
+ display:grid;
+ grid-template-columns:1fr 180px;
+ gap:12px;
+}
 .cards{
-    display:flex;
-    justify-content:center;
-    gap:20px;
-    flex-wrap:wrap;
-    padding:20px;
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:12px;
 }
-
 .card{
-    background:#102a72;
-    padding:20px;
-    border-radius:15px;
-    width:220px;
-    text-align:center;
-    box-shadow:0 0 15px cyan;
+ background:#102e68;
+ padding:18px 10px;
+ border:1px solid #00caff;
+ border-radius:9px;
+ text-align:center;
+ box-shadow:0 0 12px #00baff;
 }
-
-.value{
-    font-size:50px;
-    font-weight:bold;
+.card:nth-child(2){border-color:#ffc32d;box-shadow:0 0 12px #ffc32d}
+.card:nth-child(3){border-color:#ba36e8;box-shadow:0 0 12px #ba36e8}
+.card:nth-child(4){border-color:#00d9a5;box-shadow:0 0 12px #00d9a5}
+.card h3{font-size:14px}
+.number{font-size:35px;font-weight:bold}
+.filters{
+ display:flex;flex-direction:column;gap:12px;
 }
-
-.preview{
-    text-align:center;
-    padding:30px;
+.filter{
+ background:#102e68;padding:12px;
+ border:1px solid #00baff;
+ border-radius:8px;
 }
+select{
+ width:100%;padding:10px;
+ background:#061735;color:white;
+ border:1px solid #00baff;border-radius:5px;
+}
+.main{
+ display:grid;
+ grid-template-columns:1fr 1fr 1fr;
+ gap:12px;margin-top:15px;
+}
+.panel{
+ background:#0b285c;
+ border:1px solid #1477c5;
+ border-radius:9px;
+ padding:13px;min-width:0;
+}
+.panel h3{text-align:center;margin:5px 0 15px}
+.chart{height:290px;position:relative}
+.center{
+ position:absolute;top:43%;left:50%;
+ transform:translate(-50%,-50%);
+ text-align:center;pointer-events:none;
+ font-size:30px;font-weight:bold;
+}
+.banner{
+ height:125px;border-radius:7px;
+ background:
+ linear-gradient(#071b4570,#071b4570),
+ url("https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=900");
+ background-size:cover;background-position:center;
+ display:flex;align-items:center;justify-content:center;
+ font-size:35px;font-weight:bold;
+ text-shadow:0 0 12px #00baff;
+}
+.banner2{
+ margin-top:12px;height:145px;
+ border-radius:7px;
+ background:
+ linear-gradient(#061b4570,#061b4570),
+ url("https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=900");
+ background-size:cover;background-position:center;
+ display:flex;align-items:end;justify-content:center;
+ padding:12px;font-weight:bold;text-align:center;
+}
+.lower{
+ display:grid;grid-template-columns:1fr 1fr;
+ gap:12px;margin-top:15px;
+}
+.player-list{
+ display:grid;grid-template-columns:1fr 1fr;
+ gap:9px;font-size:12px;
+}
+.player-list div{
+ padding:7px;border-bottom:1px solid #24558c;
+}
+.player-list b{color:#00caff;float:right}
+table{
+ width:100%;border-collapse:collapse;
+ font-size:12px;
+}
+th,td{
+ padding:9px;text-align:left;
+ border-bottom:1px solid #285184;
+ white-space:nowrap;
+}
+th{background:#124078;color:#8de4ff}
+.table-wrap{overflow:auto;max-height:320px}
+footer{text-align:center;color:#91a9d0;padding:15px;font-size:12px}
 
-.preview img{
-    width:80%;
-    border-radius:10px;
+@media(max-width:950px){
+ .top{grid-template-columns:1fr}
+ .main{grid-template-columns:1fr 1fr}
+ .main .players{grid-column:1/-1}
+}
+@media(max-width:600px){
+ body{padding:5px}
+ .dashboard{padding:8px}
+ .cards{grid-template-columns:1fr 1fr;gap:8px}
+ .card{padding:10px 5px}
+ .number{font-size:27px}
+ .main,.lower{grid-template-columns:1fr}
+ .main .players{grid-column:auto}
+ .filters{display:grid;grid-template-columns:1fr 1fr}
+ .player-list{grid-template-columns:1fr 1fr}
+ .chart{height:300px}
+ header h1{font-size:17px}
 }
 </style>
-
 </head>
 
 <body>
+<div class="dashboard">
 
-<div class="header">
-🏏 IPL T20 ANALYTICS DASHBOARD 🏏
-</div>
+<header>
+<h1>🏆 IPL T20 ANALYTICS DASHBOARD 🏆</h1>
+</header>
 
+<div class="top">
 <div class="cards">
 
 <div class="card">
-<h2>Matches Played</h2>
-<div class="value">22</div>
+<h3>🏏 Matches Played</h3>
+<div class="number" id="matches">22</div>
 </div>
 
 <div class="card">
-<h2>Total Runs</h2>
-<div class="value">8,122</div>
+<h3>🏏 Total Runs</h3>
+<div class="number" id="runs">8,122</div>
 </div>
 
 <div class="card">
-<h2>Total Wickets</h2>
-<div class="value">266</div>
+<h3>🎯 Match Wickets</h3>
+<div class="number" id="wickets">266</div>
 </div>
 
 <div class="card">
-<h2>Teams</h2>
-<div class="value">10</div>
+<h3>👥 Teams</h3>
+<div class="number" id="teams">10</div>
 </div>
 
 </div>
 
-<div class="preview">
-<h2>Dashboard Preview</h2>
-<img src="dashboard.png">
+<div class="filters">
+<div class="filter">
+<label>🏆 Teams</label>
+<select id="team">
+<option value="All">All Teams</option>
+</select>
 </div>
 
+<div class="filter">
+<label>📅 Season</label>
+<select id="season">
+<option value="All">All Seasons</option>
+<option value="2024">2024</option>
+<option value="2025">2025</option>
+<option value="2026">2026</option>
+</select>
+</div>
+</div>
+</div>
+
+<div class="main">
+
+<div class="panel">
+<h3>🪙 Toss Decision</h3>
+<div class="chart">
+<canvas id="tossChart"></canvas>
+<div class="center" id="tossTotal">22</div>
+</div>
+</div>
+
+<div class="panel">
+<h3>🏟️ IPL MATCH CENTRE</h3>
+<div class="banner">IPL T20</div>
+<div class="banner2">
+THE SPIRIT OF CRICKET 🏆
+</div>
+</div>
+
+<div class="panel players">
+<h3>👑 Top Player Of The Match 👑</h3>
+<div class="chart">
+<canvas id="playerChart"></canvas>
+</div>
+</div>
+
+</div>
+
+<div class="lower">
+
+<div class="panel">
+<h3>📊 Player Statistics</h3>
+<div id="playerList" class="player-list"></div>
+</div>
+
+<div class="panel">
+<h3>🏆 Match Details</h3>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Match ID</th>
+<th>Season</th>
+<th>Teams</th>
+<th>Winner</th>
+<th>Runs</th>
+<th>Wickets</th>
+</tr>
+</thead>
+<tbody id="matchRows"></tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+<footer>IPL T20 ANALYTICS DASHBOARD | POWER BI STYLE</footer>
+</div>
+
+<script>
+
+// IPL DATASET
+const data=[
+[1001,2024,"CSK","RCB","Chennai","RCB","Bat","CSK",345,12,"Mustafizur Rahman"],
+[1002,2024,"MI","GT","Ahmedabad","GT","Bowl","GT",336,14,"Sai Sudharsan"],
+[1003,2024,"KKR","SRH","Kolkata","SRH","Bowl","KKR",412,15,"Andre Russell"],
+[1004,2024,"RR","LSG","Jaipur","RR","Bat","RR",366,11,"Sanju Samson"],
+[1005,2024,"GT","CSK","Ahmedabad","CSK","Bowl","GT",442,10,"Shubman Gill"],
+[1006,2024,"RCB","KKR","Bengaluru","KKR","Bowl","KKR",365,9,"Sunil Narine"],
+[1007,2024,"MI","RR","Mumbai","RR","Bowl","RR",252,13,"Trent Boult"],
+[1008,2025,"KKR","MI","Kolkata","MI","Bowl","KKR",296,15,"Varun Chakaravarthy"],
+[1009,2025,"CSK","MI","Chennai","CSK","Bowl","CSK",340,13,"Ruturaj Gaikwad"],
+[1010,2025,"RCB","SRH","Bengaluru","SRH","Bat","RCB",415,11,"Virat Kohli"],
+[1011,2025,"RR","GT","Jaipur","GT","Bowl","RR",368,14,"Yashasvi Jaiswal"],
+[1012,2025,"KKR","DC","Kolkata","KKR","Bat","KKR",385,12,"Rinku Singh"],
+[1013,2025,"LSG","PBKS","Lucknow","PBKS","Bowl","LSG",330,15,"Nicholas Pooran"],
+[1014,2025,"MI","RCB","Mumbai","RCB","Bowl","MI",392,10,"Suryakumar Yadav"],
+[1015,2025,"SRH","CSK","Hyderabad","CSK","Bowl","SRH",425,9,"Heinrich Klaasen"],
+[1016,2026,"CSK","RCB","Bengaluru","RCB","Bowl","RCB",375,11,"Rajat Patidar"],
+[1017,2026,"MI","KKR","Mumbai","MI","Bat","MI",405,13,"Jasprit Bumrah"],
+[1018,2026,"GT","RR","Ahmedabad","RR","Bowl","GT",350,12,"Shubman Gill"],
+[1019,2026,"SRH","LSG","Hyderabad","SRH","Bat","SRH",440,8,"Travis Head"],
+[1020,2026,"DC","CSK","Delhi","DC","Bowl","CSK",320,14,"Ravindra Jadeja"],
+[1021,2026,"PBKS","MI","Mullanpur","MI","Bowl","PBKS",365,13,"Shashank Singh"],
+[1022,2026,"KKR","SRH","Kolkata","SRH","Bowl","KKR",398,12,"Andre Russell"]
+];
+
+// TEAM DROPDOWN
+const teamSelect=document.getElementById("team");
+[...new Set(data.flatMap(m=>[m[2],m[3]]))].sort().forEach(t=>{
+ let option=document.createElement("option");
+ option.value=t;
+ option.textContent=t;
+ teamSelect.appendChild(option);
+});
+
+let tossChart,playerChart;
+
+function updateDashboard(){
+
+ const team=teamSelect.value;
+ const season=document.getElementById("season").value;
+
+ const rows=data.filter(m=>
+ (team==="All"||m[2]===team||m[3]===team)&&
+ (season==="All"||String(m[1])===season)
+ );
+
+ const totalRuns=rows.reduce((s,m)=>s+m[8],0);
+ const totalWickets=rows.reduce((s,m)=>s+m[9],0);
+ const teamSet=new Set(rows.flatMap(m=>[m[2],m[3]]));
+
+ document.getElementById("matches").textContent=rows.length;
+ document.getElementById("runs").textContent=totalRuns.toLocaleString("en-IN");
+ document.getElementById("wickets").textContent=totalWickets;
+ document.getElementById("teams").textContent=teamSet.size;
+ document.getElementById("tossTotal").textContent=rows.length;
+
+ // TOSS CHART
+ const bat=rows.filter(m=>m[6]==="Bat").length;
+ const bowl=rows.filter(m=>m[6]==="Bowl").length;
+
+ if(tossChart)tossChart.destroy();
+
+ tossChart=new Chart(document.getElementById("tossChart"),{
+ type:"doughnut",
+ data:{
+ labels:["Bowl","Bat"],
+ datasets:[{
+ data:[bowl,bat],
+ backgroundColor:["#159cf4","#ffbd32"],
+ borderWidth:0,
+ hoverOffset:10
+ }]
+ },
+ options:{
+ responsive:true,
+ maintainAspectRatio:false,
+ cutout:"65%",
+ animation:{animateRotate:true,duration:1200},
+ plugins:{
+ legend:{
+ position:"bottom",
+ labels:{color:"white",padding:18}
+ }
+ }
+ }
+ });
+
+ // PLAYER CHART
+ const awards={};
+
+ rows.forEach(m=>{
+ awards[m[10]]=(awards[m[10]]||0)+1;
+ });
+
+ const sorted=Object.entries(awards).sort((a,b)=>b[1]-a[1]);
+
+ if(playerChart)playerChart.destroy();
+
+ playerChart=new Chart(document.getElementById("playerChart"),{
+ type:"bar",
+ data:{
+ labels:sorted.map(x=>x[0]),
+ datasets:[{
+ data:sorted.map(x=>x[1]),
+ backgroundColor:"#159cf4",
+ hoverBackgroundColor:"#35d5ff",
+ borderRadius:3
+ }]
+ },
+ options:{
+ indexAxis:"y",
+ responsive:true,
+ maintainAspectRatio:false,
+ plugins:{legend:{display:false}},
+ scales:{
+ x:{
+ beginAtZero:true,
+ ticks:{color:"white",precision:0,stepSize:1},
+ grid:{color:"#234574"}
+ },
+ y:{
+ ticks:{color:"white",font:{size:10}},
+ grid:{display:false}
+ }
+ }
+ }
+ });
+
+ // PLAYER STATISTICS
+ document.getElementById("playerList").innerHTML=
+ sorted.map(([name,count])=>
+ `<div>${name}<b>${count}</b></div>`
+ ).join("")||"No player data";
+
+ // MATCH TABLE
+ document.getElementById("matchRows").innerHTML=
+ rows.map(m=>`
+ <tr>
+ <td>${m[0]}</td>
+ <td>${m[1]}</td>
+ <td>${m[2]} vs ${m[3]}</td>
+ <td>${m[7]}</td>
+ <td>${m[8]}</td>
+ <td>${m[9]}</td>
+ </tr>
+ `).join("");
+
+}
+
+teamSelect.addEventListener("change",updateDashboard);
+document.getElementById("season").addEventListener("change",updateDashboard);
+
+updateDashboard();
+
+</script>
 </body>
 </html>
