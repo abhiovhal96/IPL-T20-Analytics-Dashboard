@@ -5,7 +5,8 @@ An interactive Power BI dashboard designed to analyze IPL match statistics, team
 ---
 
 ## 📊 Dashboard Preview
-<img width="1225" height="723" alt="image" src="https://github.com/user-attachments/assets/3c63937a-1bfb-4c88-8fb7-68f6b7be7869" />
+<img width="608" height="353" alt="image" src="https://github.com/user-attachments/assets/1f3b9800-22bf-4585-8a1a-1ee5fc99a5a7" />
+
 
 
 ---
